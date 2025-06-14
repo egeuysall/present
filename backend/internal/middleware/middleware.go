@@ -30,7 +30,7 @@ func SetContentType() func(http.Handler) http.Handler {
 func RequireAuth() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Auth logic will go here
+			// TODO: Auth logic will go here
 
 			next.ServeHTTP(w, r)
 		})

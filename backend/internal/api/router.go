@@ -40,7 +40,7 @@ func Router() *chi.Mux {
 			r.Get("/gifts", handlers.HandleGetGifts)
 			r.Post("/gifts", handlers.HandlePostGifts)
 			r.Get("/gifts/{id}", handlers.HandleGetGift)
-			r.Put("/gifts/{id}", handlers.HandlePutGifts)
+			r.Patch("/gifts/{id}", handlers.HandlePatchGifts)
 			r.Delete("/gifts/{id}", handlers.HandleDeleteGift)
 		})
 	})

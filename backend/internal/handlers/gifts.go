@@ -14,7 +14,7 @@ func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func HandlePutGifts(w http.ResponseWriter, r *http.Request) {
+func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 
 }
 
