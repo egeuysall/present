@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            margin: 20px 0;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007cba;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005a8b;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        #loginResult, #meResult {
+            margin: 10px 0;
+            min-height: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Authentication Test</h1>
+
+<div class="info">
+    <strong>Note:</strong> This test requires backend endpoints:
+    <ul style="text-align: left;">
+        <li><code>POST /v1/login</code> - accepts JSON with email/password</li>
+        <li><code>GET /v1/me</code> - returns user info (requires authentication)</li>
+    </ul>
+</div>
+
+<h2>Login</h2>
+<form id="loginForm">
+    <label>
+        Email:
+        <input type="email" id="email" required placeholder="user@example.com" />
+    </label>
+    <label>
+        Password:
+        <input type="password" id="password" required />
+    </label>
+    <button type="submit">Login</button>
+</form>
+<div id="loginResult"></div>
+
+<h2>Get User Info (/me)</h2>
+<button id="meBtn">Get User Info</button>
+<pre id="meResult"></pre>
+
+<script>
+    const loginForm = document.getElementById('loginForm');
+    const loginResult = document.getElementById('loginResult');
+    const meBtn = document.getElementById('meBtn');
+    const meResult = document.getElementById('meResult');
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginResult.textContent = 'Logging in...';
+        loginResult.className = '';
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const res = await fetch('http://localhost:8080/v1/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password }),
+            });
+
+            const responseText = await res.text();
+
+            if (!res.ok) {
+                loginResult.textContent = `Login failed (${res.status}): ${responseText}`;
+                loginResult.className = 'error';
+                return;
+            }
+
+            // Try to parse as JSON, fallback to text
+            let responseData;
+            try {
+                responseData = JSON.parse(responseText);
+            } catch {
+                responseData = responseText;
+            }
+
+            loginResult.textContent = 'Login successful!';
+            loginResult.className = 'success';
+
+            if (typeof responseData === 'object') {
+                loginResult.textContent += ' Response: ' + JSON.stringify(responseData);
+            }
+
+        } catch (err) {
+            loginResult.textContent = 'Network error: ' + err.message;
+            loginResult.className = 'error';
+        }
+    });
+
+    meBtn.addEventListener('click', async () => {
+        meResult.textContent = 'Loading user info...';
+
+        try {
+            const res = await fetch('http://localhost:8080/v1/me', {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            const responseText = await res.text();
+
+            if (!res.ok) {
+                meResult.textContent = `Error ${res.status}: ${responseText}`;
+                return;
+            }
+
+            // Try to parse as JSON
+            try {
+                const data = JSON.parse(responseText);
+                meResult.textContent = JSON.stringify(data, null, 2);
+            } catch {
+                meResult.textContent = responseText;
+            }
+
+        } catch (err) {
+            meResult.textContent = 'Network error: ' + err.message;
+        }
+    });
+</script>
+</body>
+</html>
