@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/egeuysall/present/internal/models"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 
@@ -10,11 +12,6 @@ import (
 	"github.com/egeuysall/present/internal/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
-
-type GiftRequest struct {
-	Idea  string  `json:"idea"`
-	Price float64 `json:"price"`
-}
 
 func HandleGetGifts(w http.ResponseWriter, r *http.Request) {
 	userIDStr, ok := middleware.GetUserIDFromContext(r.Context())
@@ -54,17 +51,16 @@ func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req GiftRequest
+	var req models.GiftRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
-
 	if err != nil {
 		utils.SendError(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
+	priceStr := fmt.Sprintf("%.2f", req.Price)
 	var price pgtype.Numeric
-	err = price.Scan(req.Price)
-
+	err = price.Scan(priceStr)
 	if err != nil {
 		utils.SendError(w, "Invalid price format", http.StatusBadRequest)
 		return
@@ -169,12 +165,7 @@ func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	type patchGift struct {
-		Idea  *string  `json:"idea,omitempty"`
-		Price *float64 `json:"price,omitempty"`
-	}
-
-	var payload patchGift
+	var payload models.PatchGift
 
 	err = json.NewDecoder(r.Body).Decode(&payload)
 
@@ -193,8 +184,8 @@ func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 
 	if payload.Price != nil {
 		var newPrice pgtype.Numeric
-		err := newPrice.Scan(*payload.Price)
-
+		priceStr := fmt.Sprintf("%.2f", *payload.Price)
+		err := newPrice.Scan(priceStr)
 		if err != nil {
 			utils.SendError(w, "Invalid price value", http.StatusBadRequest)
 			return

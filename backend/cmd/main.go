@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/egeuysall/present/internal/utils"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/egeuysall/present/internal/api"
 	supabase "github.com/egeuysall/present/internal/supabase"
@@ -26,8 +28,17 @@ func main() {
 
 	router := api.Router()
 
+	portStr := os.Getenv("PORT")
+
+	if portStr == "" {
+		log.Fatal("PORT not set in environment")
+	}
+
+	addr := fmt.Sprintf(":%s", portStr)
+
 	log.Printf("Server starting on http://localhost:8080")
-	err = http.ListenAndServe(":8080", router)
+	err = http.ListenAndServe(addr, router)
+
 	if err != nil {
 		log.Fatal(err)
 	}

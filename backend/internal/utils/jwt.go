@@ -21,13 +21,15 @@ func CreateToken(userID string) (string, error) {
 }
 
 func SetTokenCookie(w http.ResponseWriter, token string) {
+	isProd := os.Getenv("ENV") == "production"
+
 	cookie := &http.Cookie{
 		Name:     "access_token",
 		Value:    token,
 		Path:     "/",
 		Expires:  time.Now().Add(time.Hour),
 		HttpOnly: true,
-		Secure:   false,
+		Secure:   isProd,
 		SameSite: http.SameSiteLaxMode,
 	}
 
