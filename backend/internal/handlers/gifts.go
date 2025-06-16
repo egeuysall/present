@@ -15,18 +15,22 @@ import (
 
 func HandleGetGifts(w http.ResponseWriter, r *http.Request) {
 	userIDStr, ok := middleware.GetUserIDFromContext(r.Context())
+
 	if !ok {
 		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	var userID pgtype.UUID
-	if err := userID.Scan(userIDStr); err != nil {
+	err := userID.Scan(userIDStr)
+
+	if err != nil {
 		utils.SendError(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
 	gifts, err := utils.Queries.GetGiftsByUser(r.Context(), userID)
+
 	if err != nil {
 		utils.SendError(w, "Failed to fetch gifts", http.StatusInternalServerError)
 		return
@@ -35,10 +39,12 @@ func HandleGetGifts(w http.ResponseWriter, r *http.Request) {
 	var giftResponses []models.GiftResponse
 	for _, gift := range gifts {
 		priceNumeric, _ := gift.Price.Float64Value()
+
 		if !priceNumeric.Valid {
 			utils.SendError(w, "Invalid price format", http.StatusInternalServerError)
 			return
 		}
+
 		priceFloat := priceNumeric.Float64
 
 		giftResponses = append(giftResponses, models.GiftResponse{
@@ -69,6 +75,7 @@ func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
 
 	var req models.GiftRequest
 	err = json.NewDecoder(r.Body).Decode(&req)
+
 	if err != nil {
 		utils.SendError(w, "Invalid JSON", http.StatusBadRequest)
 		return
@@ -77,6 +84,7 @@ func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
 	priceStr := fmt.Sprintf("%.2f", req.Price)
 	var price pgtype.Numeric
 	err = price.Scan(priceStr)
+
 	if err != nil {
 		utils.SendError(w, "Invalid price format", http.StatusBadRequest)
 		return
@@ -98,6 +106,7 @@ func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
+
 	if idStr == "" {
 		utils.SendError(w, "Missing gift ID", http.StatusBadRequest)
 		return
@@ -110,12 +119,14 @@ func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userID pgtype.UUID
+
 	if err := userID.Scan(userIDStr); err != nil {
 		utils.SendError(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
 	var giftID pgtype.UUID
+
 	if err := giftID.Scan(idStr); err != nil {
 		utils.SendError(w, "Invalid gift ID", http.StatusBadRequest)
 		return
@@ -125,18 +136,20 @@ func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 		ID:     giftID,
 		UserID: userID,
 	})
+
 	if err != nil {
 		utils.SendError(w, "Failed to fetch gift", http.StatusInternalServerError)
 		return
 	}
 
 	priceNumeric, _ := gift.Price.Float64Value()
+
 	if !priceNumeric.Valid {
 		utils.SendError(w, "Invalid price format", http.StatusInternalServerError)
 		return
 	}
-	priceFloat := priceNumeric.Float64
 
+	priceFloat := priceNumeric.Float64
 	response := models.GiftResponse{
 		ID:    gift.ID.String(),
 		Idea:  gift.Idea,
@@ -162,7 +175,6 @@ func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var userID, giftID pgtype.UUID
-
 	err := userID.Scan(userIDStr)
 
 	if err != nil {
@@ -188,7 +200,6 @@ func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var payload models.PatchGift
-
 	err = json.NewDecoder(r.Body).Decode(&payload)
 
 	if err != nil {
@@ -208,10 +219,12 @@ func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
 		var newPrice pgtype.Numeric
 		priceStr := fmt.Sprintf("%.2f", *payload.Price)
 		err := newPrice.Scan(priceStr)
+
 		if err != nil {
 			utils.SendError(w, "Invalid price value", http.StatusBadRequest)
 			return
 		}
+
 		price = newPrice
 	}
 

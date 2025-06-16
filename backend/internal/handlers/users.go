@@ -15,12 +15,14 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	var req models.SignupRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
+
 	if err != nil {
 		utils.SendError(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
 
 	hash, err := utils.HashPassword(req.Password)
+
 	if err != nil {
 		utils.SendError(w, "Failed to hash password", http.StatusInternalServerError)
 		return
@@ -37,6 +39,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, err := utils.CreateToken(id.String())
+
 	if err != nil {
 		utils.SendError(w, "Failed to create token", http.StatusInternalServerError)
 		return
@@ -55,24 +58,28 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	var req models.LoginRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
+
 	if err != nil {
 		utils.SendError(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
 
 	userAuth, err := utils.Queries.GetUserAuth(r.Context(), req.Email)
+
 	if err != nil {
 		utils.SendError(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
 	err = utils.CheckPassword(userAuth.HashedPassword, req.Password)
+
 	if err != nil {
 		utils.SendError(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
 	token, err := utils.CreateToken(userAuth.ID.String())
+
 	if err != nil {
 		utils.SendError(w, "Failed to create token", http.StatusInternalServerError)
 		return
@@ -106,6 +113,7 @@ func HandleMe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := utils.Queries.GetUserByID(r.Context(), id)
+	
 	if err != nil {
 		utils.SendError(w, "User not found", http.StatusNotFound)
 		return
