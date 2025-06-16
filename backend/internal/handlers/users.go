@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/egeuysall/present/internal/middleware"
 	"github.com/egeuysall/present/internal/models"
 	generated "github.com/egeuysall/present/internal/supabase/generated"
-	"net/http"
-	"time"
-
-	"github.com/egeuysall/present/internal/middleware"
 	"github.com/egeuysall/present/internal/utils"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
+	"net/http"
 )
 
 func HandleSignup(w http.ResponseWriter, r *http.Request) {
@@ -113,15 +111,9 @@ func HandleMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdAt := ""
-	if user.CreatedAt.Valid {
-		createdAt = user.CreatedAt.Time.Format(time.RFC3339)
-	}
-
 	resp := models.UserResponse{
-		ID:        user.ID.String(),
-		Email:     user.Email,
-		CreatedAt: createdAt,
+		ID:    user.ID.String(),
+		Email: user.Email,
 	}
 
 	utils.SendJson(w, resp, http.StatusOK)
