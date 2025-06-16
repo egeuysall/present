@@ -8,6 +8,7 @@ import (
 )
 
 var jwtKey = []byte(os.Getenv("JWT_KEY"))
+var isProd = os.Getenv("ENV") == "production"
 
 func CreateToken(userID string) (string, error) {
 	claims := jwt.RegisteredClaims{
@@ -21,8 +22,6 @@ func CreateToken(userID string) (string, error) {
 }
 
 func SetTokenCookie(w http.ResponseWriter, token string) {
-	isProd := os.Getenv("ENV") == "production"
-
 	cookie := &http.Cookie{
 		Name:     "access_token",
 		Value:    token,
@@ -34,4 +33,17 @@ func SetTokenCookie(w http.ResponseWriter, token string) {
 	}
 
 	http.SetCookie(w, cookie)
+}
+
+func ClearTokenCookie(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0), // Expire immediately
+		MaxAge:   -1,              // Also ensure it's removed
+		Secure:   os.Getenv("ENV") == "production",
+		SameSite: http.SameSiteLaxMode,
+	})
 }

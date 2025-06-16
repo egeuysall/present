@@ -30,6 +30,7 @@ func Router() *chi.Mux {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Post("/signup", handlers.HandleSignup)
+		r.Post("/signout", handlers.HandleSignout)
 		r.Post("/login", handlers.HandleLogin)
 
 		r.Group(func(r chi.Router) {

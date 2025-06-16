@@ -48,6 +48,11 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	utils.SendJson(w, "User created", http.StatusCreated)
 }
 
+func HandleSignout(w http.ResponseWriter, r *http.Request) {
+	utils.ClearTokenCookie(w)
+	utils.SendJson(w, "Signed out", http.StatusOK)
+}
+
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	var req models.LoginRequest
 
