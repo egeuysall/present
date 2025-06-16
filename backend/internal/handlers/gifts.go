@@ -32,7 +32,23 @@ func HandleGetGifts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendJson(w, gifts, http.StatusOK)
+	var giftResponses []models.GiftResponse
+	for _, gift := range gifts {
+		priceNumeric, _ := gift.Price.Float64Value()
+		if !priceNumeric.Valid {
+			utils.SendError(w, "Invalid price format", http.StatusInternalServerError)
+			return
+		}
+		priceFloat := priceNumeric.Float64
+
+		giftResponses = append(giftResponses, models.GiftResponse{
+			ID:    gift.ID.String(),
+			Idea:  gift.Idea,
+			Price: priceFloat,
+		})
+	}
+
+	utils.SendJson(w, giftResponses, http.StatusOK)
 }
 
 func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
@@ -82,31 +98,25 @@ func HandlePostGifts(w http.ResponseWriter, r *http.Request) {
 
 func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-
 	if idStr == "" {
 		utils.SendError(w, "Missing gift ID", http.StatusBadRequest)
 		return
 	}
 
 	userIDStr, ok := middleware.GetUserIDFromContext(r.Context())
-
 	if !ok {
 		utils.SendError(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	var userID pgtype.UUID
-	err := userID.Scan(userIDStr)
-
-	if err != nil {
+	if err := userID.Scan(userIDStr); err != nil {
 		utils.SendError(w, "Invalid user ID", http.StatusBadRequest)
 		return
 	}
 
 	var giftID pgtype.UUID
-	err = giftID.Scan(idStr)
-
-	if err != nil {
+	if err := giftID.Scan(idStr); err != nil {
 		utils.SendError(w, "Invalid gift ID", http.StatusBadRequest)
 		return
 	}
@@ -115,13 +125,25 @@ func HandleGetGift(w http.ResponseWriter, r *http.Request) {
 		ID:     giftID,
 		UserID: userID,
 	})
-
 	if err != nil {
 		utils.SendError(w, "Failed to fetch gift", http.StatusInternalServerError)
 		return
 	}
 
-	utils.SendJson(w, gift, http.StatusOK)
+	priceNumeric, _ := gift.Price.Float64Value()
+	if !priceNumeric.Valid {
+		utils.SendError(w, "Invalid price format", http.StatusInternalServerError)
+		return
+	}
+	priceFloat := priceNumeric.Float64
+
+	response := models.GiftResponse{
+		ID:    gift.ID.String(),
+		Idea:  gift.Idea,
+		Price: priceFloat,
+	}
+
+	utils.SendJson(w, response, http.StatusOK)
 }
 
 func HandlePatchGifts(w http.ResponseWriter, r *http.Request) {
