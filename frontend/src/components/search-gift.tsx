@@ -21,7 +21,7 @@ export const SearchGift: React.FC = () => {
             <label className="text-white md:col-span-4 text-lg md:text-xl lg:text-2xl font-bold mb-1">Search
                 gift</label>
             <input
-                placeholder="Bag e.g."
+                placeholder="Enter id"
                 className="placeholder:text-white/50 md:col-span-3 text-white border rounded-lg py-2 px-3 border-neutral-800"
                 value={gift}
                 onChange={(e) => setGift(e.target.value)}
