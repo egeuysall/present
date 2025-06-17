@@ -1,4 +1,4 @@
-import React from "React"
+import React from "react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -35,10 +35,10 @@ const Home: React.FC = () => {
                 <section>
                     <Image
                         src="/code.jpg"
-                        width={480}
-                        height={240}
+                        width={2048}
+                        height={1316}
                         alt="Code image"
-                        className="rounded-lg hover:opacity-75 transition duration-200"
+                        className="rounded-lg w-full hover:opacity-75 transition duration-200"
                     />
                 </section>
             </div>
