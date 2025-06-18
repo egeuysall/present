@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import type { GiftType } from "@/types/gifts";
+import React, {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
+import type {GiftType} from "@/types/gifts";
 
 interface Props {
     gift: GiftType;
@@ -33,7 +33,7 @@ const DynamicGift: React.FC<Props> = ({ gift }) => {
 
         try {
             const res = await fetch(
-                `https://presentapi.egeuysal.com/${encodeURIComponent(gift.id)}`,
+                `https://presentapi.egeuysal.com/v1/gifts${encodeURIComponent(gift.id)}`,
                 {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
@@ -68,7 +68,7 @@ const DynamicGift: React.FC<Props> = ({ gift }) => {
 
         try {
             const res = await fetch(
-                `https://presentapi.egeuysal.com/${encodeURIComponent(gift.id)}`,
+                `https://presentapi.egeuysal.com/v1/gifts${encodeURIComponent(gift.id)}`,
                 {
                     method: "DELETE",
                     credentials: "include",

@@ -25,7 +25,7 @@ const DynamicPage: React.FC<DynamicGiftProps> = async ({params}) => {
         .join("; ");
 
     const res = await fetch(
-        `https://presentapi.egeuysal.com/${encodeURIComponent(id)}`,
+        `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`,
         {
             headers: {
                 cookie: cookieHeader,
