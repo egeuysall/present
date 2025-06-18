@@ -29,7 +29,7 @@ func SetTokenCookie(w http.ResponseWriter, token string) {
 		Expires:  time.Now().Add(time.Hour),
 		HttpOnly: true,
 		Secure:   isProd,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	http.SetCookie(w, cookie)
@@ -41,9 +41,9 @@ func ClearTokenCookie(w http.ResponseWriter) {
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
-		Expires:  time.Unix(0, 0), // Expire immediately
-		MaxAge:   -1,              // Also ensure it's removed
-		Secure:   os.Getenv("ENV") == "production",
-		SameSite: http.SameSiteLaxMode,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		Secure:   isProd,
+		SameSite: http.SameSiteNoneMode,
 	})
 }
