@@ -11,8 +11,8 @@ type GiftType = {
     price: number;
 };
 
-const DynamicPage = async ({ params }: { params: { id: string } }) => {
-    const { id } = params;
+const DynamicPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+    const { id } = await params;
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
 
