@@ -1,5 +1,4 @@
 import {notFound} from "next/navigation";
-import {cookies} from "next/headers";
 import DynamicGift from "@/components/dynamic-gift";
 
 type GiftType = {
@@ -38,12 +37,6 @@ export async function generateStaticParams() {
 // Async server component, no React.FC typing needed
 export default async function DynamicPage({ params }: DynamicGiftProps) {
     const { id } = params;
-
-    // Reading cookies on server is okay, but setting cookies here is NOT supported
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token");
-
-    // If you want to set cookies, do it in middleware or API routes, not here
 
     try {
         const res = await fetch(
