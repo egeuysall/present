@@ -33,7 +33,7 @@ const DynamicGift: React.FC<Props> = ({ gift }) => {
 
         try {
             const res = await fetch(
-                `https://presentapi.egeuysal.com/v1/gifts${encodeURIComponent(gift.id)}`,
+                `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(gift.id)}`,
                 {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
@@ -68,7 +68,7 @@ const DynamicGift: React.FC<Props> = ({ gift }) => {
 
         try {
             const res = await fetch(
-                `https://presentapi.egeuysal.com/v1/gifts${encodeURIComponent(gift.id)}`,
+                `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(gift.id)}`,
                 {
                     method: "DELETE",
                     credentials: "include",

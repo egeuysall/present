@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import {notFound} from "next/navigation";
 import {cookies} from "next/headers";
@@ -9,62 +11,32 @@ type GiftType = {
     price: number;
 };
 
-interface DynamicGiftProps {
-    params: Promise<{ id: string }>;
-}
+const DynamicPage = async ({ params }: { params: { id: string } }) => {
+    const { id } = params;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("access_token")?.value;
 
-const DynamicPage: React.FC<DynamicGiftProps> = async ({ params }) => {
-    const { id } = await params;
-    let gift: GiftType | null = null;
-
-    const cookieStore = await cookies()
-    const accessToken = cookieStore.get('access_token')
-
-    if (accessToken?.value) {
-        cookieStore.set({
-            name: 'access_token',
-            value: accessToken?.value,
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            path: `/`
-        })
-    }
+    if (!token) return notFound();
 
     try {
-        const res = await fetch(
-            `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`,
-            {
-                method: "GET",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
+        const res = await fetch(`https://presentapi.egeuysal.com/v1/gifts/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Cookie: `access_token=${token}`,
+            },
+        });
 
-        if (!res.ok) {
-            const text = await res.text();
-            console.error("Failed to fetch gift", {
-                id,
-                status: res.status,
-                statusText: res.statusText,
-                responseText: text,
-            });
-        }
+        if (res.status === 404) return notFound();
 
         const json = await res.json();
-        gift = json.data;
+        const gift: GiftType = json.data;
 
-    } catch (error) {
-        console.error("Unexpected error during fetch", error);
-        notFound();
+        return <DynamicGift gift={gift} />;
+    } catch (err) {
+        console.error("Failed to load gift:", err);
+        return notFound();
     }
-
-    if (!gift) {
-        notFound()
-    }
-
-    return <DynamicGift gift={gift} />;
 };
 
 export default DynamicPage;
