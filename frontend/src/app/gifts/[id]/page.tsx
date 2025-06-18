@@ -1,5 +1,3 @@
-// app/gifts/[id]/page.tsx
-
 export const dynamic = "force-dynamic"; // Ensure dynamic rendering
 
 import React from "react";
