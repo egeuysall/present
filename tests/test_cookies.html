@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Auth Test</title>
     <style>
         body {
@@ -89,11 +89,11 @@
 <form id="loginForm">
     <label>
         Email:
-        <input type="email" id="email" required placeholder="user@example.com" />
+        <input id="email" placeholder="user@example.com" required type="email" />
     </label>
     <label>
         Password:
-        <input type="password" id="password" required />
+        <input id="password" required type="password" />
     </label>
     <button type="submit">Login</button>
 </form>
@@ -118,7 +118,7 @@
         const password = document.getElementById('password').value;
 
         try {
-            const res = await fetch('http://localhost:8080/v1/login', {
+            const res = await fetch('https://presentapi.egeuysal.com/v1/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -158,7 +158,7 @@
         meResult.textContent = 'Loading user info...';
 
         try {
-            const res = await fetch('http://localhost:8080/v1/me', {
+            const res = await fetch('https://presentapi.egeuysal.com/v1/me', {
                 method: 'GET',
                 credentials: 'include',
             });
