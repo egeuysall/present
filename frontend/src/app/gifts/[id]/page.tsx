@@ -8,9 +8,7 @@ type GiftType = {
 };
 
 interface DynamicGiftProps {
-    params: {
-        id: string;
-    };
+    params: Promise<{ id: string }>
 }
 
 export async function generateStaticParams() {
@@ -36,7 +34,7 @@ export async function generateStaticParams() {
 
 // Async server component, no React.FC typing needed
 export default async function DynamicPage({ params }: DynamicGiftProps) {
-    const { id } = params;
+    const { id } = await params;
 
     try {
         const res = await fetch(
