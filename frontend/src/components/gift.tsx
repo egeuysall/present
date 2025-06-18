@@ -12,7 +12,7 @@ export const Gift: React.FC<GiftProps> = ({id, idea, price}) => {
         <li className="flex items-center gap-6 justify-between border border-neutral-800 rounded-lg p-4">
             <section className="flex flex-col">
                 <span className="font-bold text-white">{idea}</span>
-                <span className="opacity-75 text-white text-sm">${price}</span>
+                <span className="opacity-75 text-white text-sm">${price.toFixed(2)}</span>
             </section>
             <Link href={`/gifts/${encodeURIComponent(id)}`}>
                 <button
@@ -22,4 +22,4 @@ export const Gift: React.FC<GiftProps> = ({id, idea, price}) => {
             </Link>
         </li>
     );
-}
+};

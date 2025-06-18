@@ -1,10 +1,13 @@
 "use client";
+
 import React, {useState} from "react";
+import {useRouter} from "next/navigation";
 import {ArrowLeft, LogOut} from "lucide-react";
 import Link from "next/link";
 
 const SignOut: React.FC = () => {
     const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
+    const router = useRouter();
 
     const handleSignOut = async () => {
         setIsSigningOut(true);
@@ -16,10 +19,11 @@ const SignOut: React.FC = () => {
             });
 
             if (response.ok) {
-                window.location.href = "/";
+                router.push("/");
+                router.refresh();
             }
         } catch (error) {
-            console.error(`Error: ${error}`)
+            console.error(`Error: ${error}`);
         } finally {
             setIsSigningOut(false);
         }

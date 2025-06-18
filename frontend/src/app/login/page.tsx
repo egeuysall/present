@@ -1,6 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
+import {useRouter} from "next/navigation";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -8,13 +9,15 @@ const Login: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setSuccessMessage(null);
-
         setIsSubmitting(true);
+
+        const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
         try {
             const response = await fetch("http://localhost:8080/v1/login", {
@@ -28,10 +31,13 @@ const Login: React.FC = () => {
 
             if (!response.ok) throw new Error(json.error || "Login failed.");
 
+            await delay(3000);
             setSuccessMessage(json.data || "Login successful!");
             setEmail("");
             setPassword("");
-            // Optionally redirect or update UI after login here
+
+            router.push("/gifts");
+            router.refresh();
         } catch (err: any) {
             setError(err.message || "Login failed. Please try again.");
         } finally {

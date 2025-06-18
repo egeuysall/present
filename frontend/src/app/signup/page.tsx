@@ -1,6 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
+import {useRouter} from "next/navigation";
 
 const Signup: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ const Signup: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const router = useRouter();
 
     const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -28,8 +30,6 @@ const Signup: React.FC = () => {
             const signupJson = await signupResponse.json();
             if (!signupResponse.ok) throw new Error(signupJson.error || "Signup failed.");
 
-            await delay(3000);
-
             const loginResponse = await fetch("http://localhost:8080/v1/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -40,16 +40,18 @@ const Signup: React.FC = () => {
             const loginJson = await loginResponse.json();
             if (!loginResponse.ok) throw new Error(loginJson.error || "Login failed after signup.");
 
+            await delay(3000);
             setSuccessMessage("Signup and login successful!");
             setEmail("");
             setPassword("");
+            router.push("/gifts")
+            router.refresh();
         } catch (err: any) {
             setError(err.message || "Signup or login failed. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
     };
-
 
     return (
         <main className="flex flex-col items-center px-4">
