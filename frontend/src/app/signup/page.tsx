@@ -12,8 +12,6 @@ const Signup: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
-    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
@@ -31,8 +29,6 @@ const Signup: React.FC = () => {
             const signupJson = await signupResponse.json();
             if (!signupResponse.ok) throw new Error(signupJson.error || "Signup failed.");
 
-            await delay(3000);
-
             const loginResponse = await fetch("https://presentapi.egeuysal.com/v1/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -43,7 +39,6 @@ const Signup: React.FC = () => {
             const loginJson = await loginResponse.json();
             if (!loginResponse.ok) throw new Error(loginJson.error || "Login failed after signup.");
 
-            await delay(3000);
             setSuccessMessage("Signup and login successful!");
             setEmail("");
             setPassword("");

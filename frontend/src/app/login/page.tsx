@@ -18,8 +18,6 @@ const Login: React.FC = () => {
         setSuccessMessage(null);
         setIsSubmitting(true);
 
-        const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
         try {
             const response = await fetch("https://presentapi.egeuysal.com/v1/login", {
                 method: "POST",
@@ -32,7 +30,6 @@ const Login: React.FC = () => {
 
             if (!response.ok) throw new Error(json.error || "Login failed.");
 
-            await delay(3000);
             setSuccessMessage(json.data || "Login successful!");
             setEmail("");
             setPassword("");

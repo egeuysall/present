@@ -15,15 +15,15 @@ func Router() *chi.Mux {
 
 	// Global middleware
 	r.Use(
-		middleware.Recoverer,
-		middleware.RealIP,
-		middleware.Timeout(10*time.Second),
-		middleware.NoCache,
-		middleware.Compress(5),
-		httprate.LimitByIP(3, 3*time.Second),
-		appmid.SetContentType(),
-		appmid.Cors(),
-	)
+        middleware.Recoverer,
+        middleware.RealIP,
+        middleware.Timeout(3 * time.Second),
+        middleware.NoCache,
+        middleware.Compress(5),
+        httprate.LimitByIP(30, time.Minute),
+        appmid.SetContentType(),
+        appmid.Cors(),
+    )
 
 	r.Get("/", handlers.HandleRoot)
 	r.Get("/ping", handlers.CheckPing)
