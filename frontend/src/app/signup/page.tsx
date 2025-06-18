@@ -31,6 +31,8 @@ const Signup: React.FC = () => {
             const signupJson = await signupResponse.json();
             if (!signupResponse.ok) throw new Error(signupJson.error || "Signup failed.");
 
+            await delay(3000);
+
             const loginResponse = await fetch("https://presentapi.egeuysal.com/v1/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
