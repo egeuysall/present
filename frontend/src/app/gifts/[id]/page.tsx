@@ -1,4 +1,6 @@
+import React from "react";
 import {notFound} from "next/navigation";
+import {cookies} from "next/headers";
 import DynamicGift from "@/components/dynamic-gift";
 
 type GiftType = {
@@ -8,38 +10,29 @@ type GiftType = {
 };
 
 interface DynamicGiftProps {
-    params: Promise<{ id: string }>
+    params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-    try {
-        const res = await fetch(`https://presentapi.egeuysal.com/v1/gifts`);
-
-        if (!res.ok) {
-            console.error("Failed to fetch gifts");
-            notFound();
-        }
-
-        const json = await res.json();
-        const gifts: GiftType[] = json.data;
-
-        return gifts.map((gift) => ({
-            id: gift.id,
-        }));
-    } catch (err) {
-        console.error("Unexpected error during fetch", err);
-        notFound();
-    }
-}
-
-// Async server component, no React.FC typing needed
-export default async function DynamicPage({ params }: DynamicGiftProps) {
+const DynamicPage: React.FC<DynamicGiftProps> = async ({ params }) => {
     const { id } = await params;
+
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get('access_token')
+
+    if (accessToken?.value) {
+        cookieStore.set({
+            name: 'access_token',
+            value: accessToken?.value,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            path: `/gifts/${id}`
+        })
+    }
 
     try {
         const res = await fetch(
-            `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`
-        );
+            `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`);
 
         if (!res.ok) {
             const text = await res.text();
@@ -60,4 +53,6 @@ export default async function DynamicPage({ params }: DynamicGiftProps) {
         console.error("Unexpected error during fetch", err);
         notFound();
     }
-}
+};
+
+export default DynamicPage;
