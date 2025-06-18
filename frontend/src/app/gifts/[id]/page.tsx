@@ -13,36 +13,46 @@ interface DynamicGiftProps {
     params: Promise<{ id: string }>;
 }
 
-const DynamicPage: React.FC<DynamicGiftProps> = async ({params}) => {
-    const {id} = await params;
+const DynamicPage: React.FC<DynamicGiftProps> = async ({ params }) => {
+    const { id } = await params;
 
-    // Get cookies from the incoming request
-    const cookieStore = await cookies();
-    const allCookies = cookieStore.getAll();
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get('access_token')
 
-    const cookieHeader = allCookies
-        .map(({name, value}) => `${name}=${value}`)
-        .join("; ");
-
-    const res = await fetch(
-        `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`,
-        {
-            headers: {
-                cookie: cookieHeader,
-            },
-            credentials: "include",
-        }
-    );
-
-    if (!res.ok) {
-        console.error(`Fetch failed with status ${res.status} ${res.statusText}`);
-        notFound();
+    if (accessToken?.value) {
+        cookieStore.set({
+            name: 'access_token',
+            value: accessToken?.value,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            path: `/gifts/${id}`
+        })
     }
 
-    const json = await res.json();
-    const gift: GiftType = json.data;
+    try {
+        const res = await fetch(
+            `https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`);
 
-    return <DynamicGift gift={gift}/>;
+        if (!res.ok) {
+            const text = await res.text();
+            console.error("Failed to fetch gift", {
+                id,
+                status: res.status,
+                statusText: res.statusText,
+                responseText: text,
+            });
+            notFound();
+        }
+
+        const json = await res.json();
+        const gift: GiftType = json.data;
+
+        return <DynamicGift gift={gift} />;
+    } catch (err) {
+        console.error("Unexpected error during fetch", err);
+        notFound();
+    }
 };
 
 export default DynamicPage;

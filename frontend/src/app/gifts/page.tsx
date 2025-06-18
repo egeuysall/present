@@ -53,10 +53,10 @@ const Gifts: React.FC = () => {
 
             const res = await fetch("https://presentapi.egeuysal.com/v1/gifts", {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
                 body: JSON.stringify({
                     idea,
                     price: parseFloat(formattedPrice),
