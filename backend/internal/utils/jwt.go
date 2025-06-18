@@ -22,30 +22,28 @@ func CreateToken(userID string) (string, error) {
 }
 
 func SetTokenCookie(w http.ResponseWriter, token string) {
-    cookie := &http.Cookie{
-        Name:     "access_token",
-        Value:    token,
-        Path:     "/",
-        Domain:   ".egeuysal.com",
-        Expires:  time.Now().Add(time.Hour),
-        HttpOnly: true,
-        Secure:   isProd,
-        SameSite: http.SameSiteNoneMode,
-    }
+	cookie := &http.Cookie{
+		Name:     "access_token",
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(time.Hour),
+		HttpOnly: true,
+		Secure:   isProd,
+		SameSite: http.SameSiteLaxMode,
+	}
 
-    http.SetCookie(w, cookie)
+	http.SetCookie(w, cookie)
 }
 
 func ClearTokenCookie(w http.ResponseWriter) {
-    http.SetCookie(w, &http.Cookie{
-        Name:     "access_token",
-        Value:    "",
-        Path:     "/",
-        Domain:   ".egeuysal.com",
-        HttpOnly: true,
-        Expires:  time.Unix(0, 0),
-        MaxAge:   -1,
-        Secure:   isProd,
-        SameSite: http.SameSiteNoneMode,
-    })
+	http.SetCookie(w, &http.Cookie{
+		Name:     "access_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		Secure:   isProd,
+		SameSite: http.SameSiteLaxMode,
+	})
 }
