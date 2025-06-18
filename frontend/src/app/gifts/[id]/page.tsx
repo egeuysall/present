@@ -30,9 +30,9 @@ const DynamicPage = async ({ params }: { params: Promise<{ id: string }> }) => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                Cookie: `access_token=${token}`, // Inject token manually
+                Cookie: `access_token=${token}`,
             },
-            cache: "no-store", // Optional: ensure fresh data
+            credentials: "include",
         });
 
         if (!res.ok) {
