@@ -19,7 +19,7 @@ const DynamicPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     if (!token) return notFound();
 
     try {
-        const res = await fetch(`https://presentapi.egeuysal.com/v1/gifts/${id}`, {
+        const res = await fetch(`https://presentapi.egeuysal.com/v1/gifts/${encodeURIComponent(id)}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
