@@ -30,6 +30,7 @@ const DynamicPage: React.FC<DynamicGiftProps> = async ({params}) => {
             headers: {
                 cookie: cookieHeader,
             },
+            credentials: "include",
         }
     );
 
