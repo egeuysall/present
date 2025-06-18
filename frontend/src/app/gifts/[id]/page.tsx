@@ -1,5 +1,5 @@
 import React from "react";
-import {notFound} from "next/navigation";
+// import {notFound} from "next/navigation";
 import {cookies} from "next/headers";
 import DynamicGift from "@/components/dynamic-gift";
 
@@ -42,7 +42,7 @@ const DynamicPage: React.FC<DynamicGiftProps> = async ({ params }) => {
                 statusText: res.statusText,
                 responseText: text,
             });
-            notFound();
+            // notFound();
         }
 
         const json = await res.json();
@@ -51,7 +51,7 @@ const DynamicPage: React.FC<DynamicGiftProps> = async ({ params }) => {
         return <DynamicGift gift={gift} />;
     } catch (err) {
         console.error("Unexpected error during fetch", err);
-        notFound();
+        // notFound();
     }
 };
 
