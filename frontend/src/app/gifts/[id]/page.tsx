@@ -14,7 +14,9 @@ type GiftType = {
 const DynamicPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
     const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const token = cookieStore.toString()
+
+    console.error(token)
 
     if (!token) return notFound();
 
