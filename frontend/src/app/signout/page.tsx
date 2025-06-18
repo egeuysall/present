@@ -13,7 +13,7 @@ const SignOut: React.FC = () => {
         setIsSigningOut(true);
 
         try {
-            const response = await fetch("http://localhost:8080/v1/signout", {
+            const response = await fetch("https://presentapi.egeuysal.com/v1/signout", {
                 method: "POST",
                 credentials: "include",
             });
@@ -22,8 +22,15 @@ const SignOut: React.FC = () => {
                 router.push("/");
                 router.refresh();
             }
-        } catch (error) {
-            console.error(`Error: ${error}`);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const err = error as Error & { message: string };
+                console.error(`Error: ${err.message}`);
+            } else if (typeof error === 'string') {
+                console.error(`Error: ${error}`);
+            } else {
+                console.error('An unknown error occurred');
+            }
         } finally {
             setIsSigningOut(false);
         }

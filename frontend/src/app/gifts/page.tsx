@@ -1,11 +1,13 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {Gift} from "@/components/gift";
+import type {GiftType} from "@/types/gifts"
+import Error from "next/error";
 
 const Gifts: React.FC = () => {
-    const [gifts, setGifts] = useState<any[]>([]);
+    const [gifts, setGifts] = useState<GiftType[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -14,9 +16,9 @@ const Gifts: React.FC = () => {
 
     const router = useRouter();
 
-    const fetchGifts = async () => {
+    const fetchGifts = useCallback(async () => {
         try {
-            const res = await fetch("http://localhost:8080/v1/gifts", {
+            const res = await fetch("https://presentapi.egeuysal.com/v1/gifts", {
                 credentials: "include",
             });
 
@@ -25,25 +27,31 @@ const Gifts: React.FC = () => {
             if (!res.ok) throw new Error(json.error || "Failed to fetch gifts");
 
             setGifts(Array.isArray(json.data) ? json.data : []);
-        } catch (error: any) {
-            console.error(`Error: ${error.message}`);
-            setError(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const err = error as Error & { message: string };
+                console.error(`Error: ${err.message}`);
+                setError(err.message);
+            } else {
+                console.error("An unknown error occurred");
+                setError("Something went wrong.");
+            }
         } finally {
             setLoading(false);
             router.refresh();
         }
-    };
+    }, [router]);
 
     useEffect(() => {
         fetchGifts();
-    }, []);
+    }, [fetchGifts]);
 
     const handleCreateGift = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const formattedPrice = parseFloat(price).toFixed(2);
 
-            const res = await fetch("http://localhost:8080/v1/gifts", {
+            const res = await fetch("https://presentapi.egeuysal.com/v1/gifts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,9 +70,15 @@ const Gifts: React.FC = () => {
             setIdea("");
             setPrice("");
             fetchGifts();
-        } catch (error: any) {
-            console.error(`Error: ${error.message}`);
-            setError(error.message);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const err = error as Error & { message: string };
+                console.error(`Error: ${err.message}`);
+                setError(err.message);
+            } else {
+                console.error("An unknown error occurred");
+                setError("Something went wrong.");
+            }
         }
     };
 
@@ -87,7 +101,7 @@ const Gifts: React.FC = () => {
                         />
                         <input
                             type="number"
-                            step="1"
+                            step="0.01"
                             placeholder="Price"
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}

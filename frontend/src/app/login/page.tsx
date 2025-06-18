@@ -2,6 +2,7 @@
 
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
+import Error from "next/error";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const Login: React.FC = () => {
         const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
         try {
-            const response = await fetch("http://localhost:8080/v1/login", {
+            const response = await fetch("https://presentapi.egeuysal.com/v1/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
@@ -38,8 +39,14 @@ const Login: React.FC = () => {
 
             router.push("/gifts");
             router.refresh();
-        } catch (err: any) {
-            setError(err.message || "Login failed. Please try again.");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const err = error as Error & { message?: string };
+                setError(err.message || "Login failed. Please try again.");
+            } else {
+                console.error("An unknown error occurred");
+                setError("Something went wrong.");
+            }
         } finally {
             setIsSubmitting(false);
         }

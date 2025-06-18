@@ -1,6 +1,7 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
+import Error from "next/error";
 
 interface UserData {
     id: string;
@@ -20,19 +21,20 @@ const Profile: React.FC = () => {
         const fetchUserData = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:8080/v1/me', {
+                const response = await fetch('https://presentapi.egeuysal.com/v1/me', {
                     credentials: "include",
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
 
                 const result: ApiResponse = await response.json();
                 setUserData(result.data);
                 setError(null);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : 'An error occurred');
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    const err = error as Error & { message: string };
+                    setError(err.message);
+                } else {
+                    setError('An error occurred');
+                }
                 setUserData(null);
             } finally {
                 setLoading(false);

@@ -12,7 +12,7 @@ export const ProfilePhoto: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("http://localhost:8080/v1/me", {
+                const response = await fetch("https://presentapi.egeuysal.com/v1/me", {
                     credentials: "include",
                 });
 
@@ -23,8 +23,15 @@ export const ProfilePhoto: React.FC = () => {
                         setPhotoLetter(email.charAt(0).toUpperCase());
                     }
                 }
-            } catch (error) {
-                console.error(`Error: ${error}`);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    const err = error as Error & { message: string };
+                    console.error(`Error: ${err.message}`);
+                } else if (typeof error === 'string') {
+                    console.error(`Error: ${error}`);
+                } else {
+                    console.error('An unknown error occurred');
+                }
             }
         };
 

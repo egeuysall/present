@@ -2,6 +2,7 @@
 
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
+import Error from "next/error";
 
 const Signup: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -20,7 +21,7 @@ const Signup: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            const signupResponse = await fetch("http://localhost:8080/v1/signup", {
+            const signupResponse = await fetch("https://presentapi.egeuysal.com/v1/signup", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
@@ -30,7 +31,7 @@ const Signup: React.FC = () => {
             const signupJson = await signupResponse.json();
             if (!signupResponse.ok) throw new Error(signupJson.error || "Signup failed.");
 
-            const loginResponse = await fetch("http://localhost:8080/v1/login", {
+            const loginResponse = await fetch("https://presentapi.egeuysal.com/v1/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
@@ -46,8 +47,14 @@ const Signup: React.FC = () => {
             setPassword("");
             router.push("/gifts")
             router.refresh();
-        } catch (err: any) {
-            setError(err.message || "Signup or login failed. Please try again.");
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                const err = error as Error & { message: string };
+                setError(err.message || "Signup or login failed. Please try again.");
+            } else {
+                console.error("An unknown error occurred");
+                setError("Something went wrong.");
+            }
         } finally {
             setIsSubmitting(false);
         }
