@@ -20,7 +20,7 @@ var jwtKey = []byte(os.Getenv("JWT_KEY"))
 // Cors middleware
 func Cors() func(next http.Handler) http.Handler {
 	return cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://www.present.egeuysal.com", "http://localhost:3000"},
+		AllowedOrigins:   []string{"https://www.present.egeuysal.com"},
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		AllowCredentials: true,
